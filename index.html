@@ -113,21 +113,16 @@
         position: relative;
       }
 
-      /* Audio Player (Modern Style) */
-      #bgMusic {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 300px;
-        max-width: 80%;
-        opacity: 0.8;
-        transition: opacity 0.3s;
-        z-index: 100;
-        border-radius: 25px;
-        box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
-      }
+      /* YouTube Player Style */
+      .youtube-player {
+  position: fixed;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
 
-      #bgMusic:hover {
+      .youtube-player:hover {
         opacity: 1;
       }
 
@@ -350,23 +345,27 @@
         .love-letter {
           padding: 20px;
         }
+        
+        .youtube-player {
+          width: 250px;
+          height: 60px;
+          bottom: 10px;
+          right: 10px;
+        }
       }
     </style>
   </head>
   <body>
     <!-- ===== HALAMAN AWAL ===== -->
     <div class="entry-page" id="entryPage">
-      <h1 class="entry-title">Happy Birthday!</h1>
-      <button class="enter-btn" id="enterBtn">Open My Heart</button>
+      <h1 class="entry-title">Happy Birthday Cantikk!</h1>
+      <button class="enter-btn" id="enterBtn">Open Here💖</button>
     </div>
 
     <!-- ===== HALAMAN UTAMA ===== -->
     <div class="main-page" id="mainPage">
-      <!-- Audio Player (Auto Play) -->
-      <audio id="bgMusic" controls loop>
-        <source src="blue.mp3" type="audio/mpeg" />
-        <!-- Ganti dengan direct link MP3 -->
-      </audio>
+      <!-- YouTube Player -->
+      <div id="youtubePlayer" class="youtube-player"></div>
 
       <!-- Photo Showcase -->
       <div class="photo-showcase">
@@ -379,7 +378,6 @@
         <img src="IMG_9933.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
         <img src="IMG_9950.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
         <img src="sss.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
-        <!-- Tambahkan lebih banyak foto -->
       </div>
 
       <!-- Love Letter -->
@@ -389,39 +387,79 @@
     </div>
 
     <script>
-      // ===== TRANSISI HALAMAN =====
-      document
-        .getElementById("enterBtn")
-        .addEventListener("click", function () {
-          // 1. Animasi tombol
-          this.innerHTML = "✨ Ready? ✨";
-          this.style.borderColor = "#fff";
+      // ===== YOUTUBE PLAYER =====
+      // 1. Load YouTube API
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-          // 2. Buat efek partikel jatuh
-          createFallingParticles(100); // Jumlah partikel yang banyak
-          
-          // 3. Buat efek confetti
-          createConfetti();
-
-          // 4. Sembunyikan halaman awal
-          setTimeout(() => {
-            document.getElementById("entryPage").classList.add("hide");
-            document.getElementById("mainPage").style.display = "block";
-
-            // 5. Mulai musik dan efek
-            document
-              .getElementById("bgMusic")
-              .play()
-              .catch((e) => {
-                console.log("Autoplay prevented - user interaction needed");
-              });
-            typeWriter();
-            createFloatingHearts();
-            
-            // Mulai efek partikel jatuh terus menerus di halaman kedua
-            startContinuousFallingParticles();
-          }, 3000);
+      // 2. Buat player
+      let ytPlayer;
+      function onYouTubeIframeAPIReady() {
+        ytPlayer = new YT.Player('youtubePlayer', {
+          height: '80',
+          width: '300',
+          videoId: 'IpFX2vq8HKw', // Ganti dengan ID video YouTube Anda
+          playerVars: {
+  'autoplay': 1,
+  'controls': 0,  // Sembunyikan kontrol
+  'disablekb': 1,
+  'fs': 0,
+  'loop': 1,
+  'modestbranding': 1,
+  'playsinline': 1,
+  'showinfo': 0,  // Sembunyikan info video
+  'rel': 0,       // Sembunyikan video terkait
+  'iv_load_policy': 3  // Sembunyikan anotasi
+},
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
         });
+      }
+
+      // 3. Fungsi kontrol
+      function onPlayerReady(event) {
+        event.target.setVolume(50); // Set volume 50%
+        event.target.playVideo();
+      }
+
+      function onPlayerStateChange(event) {
+        // Loop video saat selesai
+        if (event.data === YT.PlayerState.ENDED) {
+          event.target.playVideo();
+        }
+      }
+
+      // ===== TRANSISI HALAMAN =====
+      document.getElementById("enterBtn").addEventListener("click", function () {
+        // 1. Animasi tombol
+        this.innerHTML = "✨ Ready? ✨";
+        this.style.borderColor = "#fff";
+
+        // 2. Buat efek partikel jatuh
+        createFallingParticles(100);
+        
+        // 3. Buat efek confetti
+        createConfetti();
+
+        // 4. Sembunyikan halaman awal
+        setTimeout(() => {
+          document.getElementById("entryPage").classList.add("hide");
+          document.getElementById("mainPage").style.display = "block";
+
+          // 5. Mulai musik YouTube
+          if (typeof ytPlayer !== 'undefined') {
+            ytPlayer.playVideo();
+          }
+          
+          typeWriter();
+          createFloatingHearts();
+          startContinuousFallingParticles();
+        }, 3000);
+      });
 
       // ===== PARTIKEL JATUH =====
       function createFallingParticles(count) {
@@ -432,37 +470,30 @@
             const particle = document.createElement("div");
             particle.className = "falling-particle";
             
-            // Posisi acak di bagian atas layar
             particle.style.left = Math.random() * 100 + "vw";
             particle.style.top = "-10px";
-            
-            // Warna acak
             particle.style.background = colors[Math.floor(Math.random() * colors.length)];
             
-            // Ukuran acak
             const size = Math.random() * 10 + 5;
             particle.style.width = size + "px";
             particle.style.height = size + "px";
             
-            // Kecepatan jatuh acak
             const duration = Math.random() * 3 + 2;
             particle.style.animationDuration = duration + "s";
             
             document.body.appendChild(particle);
             
-            // Hapus partikel setelah animasi selesai
             setTimeout(() => {
               particle.remove();
             }, duration * 1000);
-          }, i * 30); // Penundaan untuk efek bertahap
+          }, i * 30);
         }
       }
       
       // ===== PARTIKEL JATUH TERUS MENERUS =====
       function startContinuousFallingParticles() {
-        // Buat partikel jatuh setiap 300ms
         setInterval(() => {
-          createFallingParticles(5); // Buat 5 partikel setiap interval
+          createFallingParticles(5);
         }, 300);
       }
 
@@ -475,15 +506,9 @@
           particle.style.top = e.clientY + "px";
           particle.style.opacity = "0.8";
           particle.style.transform = "scale(1)";
-
-          // Random color variation
-          const colors = ["gold", "#ff69b4", "#ff1493", "#ffb6c1"];
-          particle.style.background =
-            colors[Math.floor(Math.random() * colors.length)];
-
+          particle.style.background = ["gold", "#ff69b4", "#ff1493", "#ffb6c1"][Math.floor(Math.random() * 4)];
           document.body.appendChild(particle);
 
-          // Animasi partikel
           setTimeout(() => {
             particle.style.transform = "scale(0)";
             particle.style.opacity = "0";
@@ -497,40 +522,26 @@
         const heartIcons = ["❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "💖"];
         const colors = ["#ff69b4", "#ff1493", "#ffb6c1", "#ff85a2", "#ff6b81"];
         
-        // Dapatkan posisi klik
         const x = event.clientX;
         const y = event.clientY;
         
-        // Buat 15 partikel hati
         for (let i = 0; i < 15; i++) {
           const heart = document.createElement("div");
           heart.className = "heart-particle";
           heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
-          
-          // Set posisi awal (tempat diklik)
           heart.style.left = x + "px";
           heart.style.top = y + "px";
-          
-          // Warna acak
           heart.style.color = colors[Math.floor(Math.random() * colors.length)];
           
-          // Ukuran acak
           const size = Math.random() * 20 + 15;
           heart.style.fontSize = size + "px";
           
-          // Arah dan jarak terbang acak
           const angle = Math.random() * Math.PI * 2;
           const distance = Math.random() * 100 + 50;
-          const tx = Math.cos(angle) * distance;
-          const ty = Math.sin(angle) * distance;
-          
-          // Set variabel CSS untuk animasi
-          heart.style.setProperty("--tx", tx + "px");
-          heart.style.setProperty("--ty", -ty + "px"); // Minus untuk terbang ke atas
+          heart.style.setProperty("--tx", Math.cos(angle) * distance + "px");
+          heart.style.setProperty("--ty", -Math.sin(angle) * distance + "px");
           
           document.body.appendChild(heart);
-          
-          // Hapus elemen setelah animasi selesai
           setTimeout(() => heart.remove(), 2000);
         }
       }
@@ -542,9 +553,7 @@
             const confetti = document.createElement("div");
             confetti.className = "confetti";
             confetti.style.left = Math.random() * 100 + "vw";
-            confetti.style.background = `hsl(${
-              Math.random() * 60 + 330
-            }, 100%, 70%)`;
+            confetti.style.background = `hsl(${Math.random() * 60 + 330}, 100%, 70%)`;
             confetti.style.animationDuration = Math.random() * 3 + 2 + "s";
             confetti.style.animationDelay = Math.random() * 2 + "s";
             document.body.appendChild(confetti);
@@ -562,7 +571,7 @@
 
 Aku tau tahun ini bukan tahun yang gampang buat kamu, banyak hal yang harus kamu hadapi, banyak keputusan besar yang harus kamu ambil, tapi aku yakin kamu bakal bisa ngelewatin semuanya dengan kuat, seperti yang selama ini kamu lakuin.
 
-Semoga di umur baru ini, kamu makin tenang, makin bahagia, dan semakin dekat sama impian-impian yang selama ini kamu perjuangin. Apapun yang terjadi nanti, jangan lupa buat tetap jadi Chacha yang selalu penuh semangat & nggak gampang nyerah.
+Semoga di umur baru ini, kamu makin tenang, makin bahagia, dan semakin dekat sama impian-impian yang pernah kamu cita-citakan yaaa . Apapun yang terjadi nanti, jangan lupa buat tetap jadi Chacha yang aku kenal yang selalu penuh semangat & nggak gampang nyerah.
 
 Pokoknya, semoga ini jadi tahun yang penuh keberkahan buat kamu. Enjoy your day, yaa! 🎂🎁`;
         const element = document.getElementById("letterText");
@@ -571,7 +580,6 @@ Pokoknya, semoga ini jadi tahun yang penuh keberkahan buat kamu. Enjoy your day,
 
         function typing() {
           if (i < text.length) {
-            // Handle line breaks
             if (text.charAt(i) === "\n") {
               element.innerHTML += "<br>";
               isNewLine = true;
@@ -586,7 +594,6 @@ Pokoknya, semoga ini jadi tahun yang penuh keberkahan buat kamu. Enjoy your day,
             i++;
             setTimeout(typing, Math.random() * 30 + 30);
           } else {
-            // Add final heartbeat effect
             element.innerHTML += ' <span class="heartbeat">❤️</span>';
           }
         }
@@ -602,8 +609,6 @@ Pokoknya, semoga ini jadi tahun yang penuh keberkahan buat kamu. Enjoy your day,
         setTimeout(() => {
           mainPhoto.src = src;
           mainPhoto.style.transform = "scale(1) rotate(0deg)";
-
-          // Add temporary glow effect
           mainPhoto.style.boxShadow = "0 0 60px rgba(255, 105, 180, 1)";
           setTimeout(() => {
             mainPhoto.style.boxShadow = "0 0 30px rgba(255, 105, 180, 0.6)";
@@ -623,12 +628,8 @@ Pokoknya, semoga ini jadi tahun yang penuh keberkahan buat kamu. Enjoy your day,
           heart.style.fontSize = Math.random() * 20 + 15 + "px";
           heart.style.animationDuration = Math.random() * 6 + 3 + "s";
           heart.style.animationDelay = Math.random() * 5 + "s";
-
-          // Random slight color variation
           heart.style.color = `hsl(${Math.random() * 60 + 330}, 100%, 70%)`;
-
           document.body.appendChild(heart);
-
           setTimeout(() => heart.remove(), 8000);
         }, 300);
       }
