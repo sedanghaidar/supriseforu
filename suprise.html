@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For My Queen 👑</title>
+    <style>
+      /* === GLOBAL STYLE === */
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;500&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        overflow-x: hidden;
+        background: #000;
+        color: #fff;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ff1493" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'),
+          auto;
+      }
+
+      /* === HALAMAN AWAL === */
+      .entry-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), no-repeat center/cover;
+        z-index: 1000;
+        transition: all 1s;
+      }
+
+      .entry-page.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .entry-title {
+        font-family: "Dancing Script", cursive;
+        font-size: clamp(3rem, 8vw, 5rem);
+        margin-bottom: 2rem;
+        background: linear-gradient(45deg, #ff69b4, #ff1493, #ff69b4);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: shine 3s infinite;
+        text-align: center;
+        padding: 0 20px;
+      }
+
+      @keyframes shine {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .enter-btn {
+        padding: clamp(12px, 3vw, 15px) clamp(30px, 8vw, 40px);
+        font-size: clamp(1.2rem, 4vw, 1.5rem);
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid #ff69b4;
+        border-radius: 50px;
+        color: white;
+        cursor: pointer;
+        backdrop-filter: blur(5px);
+        transition: all 0.5s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .enter-btn:hover {
+        background: rgba(255, 105, 180, 0.3);
+        box-shadow: 0 0 20px #ff69b4;
+      }
+
+      .enter-btn::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transform: rotate(45deg);
+        transition: all 0.5s;
+      }
+
+      .enter-btn:hover::before {
+        left: 100%;
+      }
+
+      /* === HALAMAN UTAMA === */
+      .main-page {
+        display: none;
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+      }
+
+      /* Audio Player (Modern Style) */
+      #bgMusic {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        max-width: 80%;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+        z-index: 100;
+        border-radius: 25px;
+        box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+      }
+
+      #bgMusic:hover {
+        opacity: 1;
+      }
+
+      /* Gallery Section - Enhanced */
+      .photo-showcase {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 40px 0;
+      }
+
+      .main-photo {
+        width: min(300px, 80vw);
+        height: min(300px, 80vw);
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #ff69b4;
+        box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+        margin-bottom: 30px;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 10;
+        position: relative;
+      }
+
+      .main-photo::after {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        border-radius: 50%;
+        border: 2px dashed #ff69b4;
+        animation: rotate 20s linear infinite;
+        pointer-events: none;
+        opacity: 0.6;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .main-photo:hover {
+        transform: scale(1.05) rotate(5deg);
+        box-shadow: 0 0 50px rgba(255, 105, 180, 0.9);
+      }
+
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .photo-grid img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        filter: brightness(0.8);
+        cursor: pointer;
+      }
+
+      .photo-grid img:hover {
+        transform: scale(1.1) rotate(2deg);
+        filter: brightness(1);
+        z-index: 5;
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.7);
+      }
+
+      /* Love Letter - Enhanced */
+      .love-letter {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: min(90%, 700px);
+        margin: 40px auto;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(255, 105, 180, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .love-letter::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 20, 147, 0.1) 0%,
+          transparent 70%
+        );
+        animation: rotate 15s linear infinite;
+        z-index: -1;
+      }
+
+      .letter-content {
+        font-family: "Dancing Script", cursive;
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+        line-height: 1.6;
+        white-space: pre-line;
+      }
+
+      /* === EFEK SPESIAL === */
+      .particle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: gold;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+      }
+
+      .heart-particle {
+        position: absolute;
+        font-size: 20px;
+        pointer-events: none;
+        z-index: 1;
+        animation: heartFloat 2s ease-out forwards;
+        user-select: none;
+      }
+
+      @keyframes heartFloat {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--tx), var(--ty)) scale(0);
+          opacity: 0;
+        }
+      }
+
+      .floating-heart {
+        position: absolute;
+        font-size: clamp(18px, 3vw, 24px);
+        color: #ff1493;
+        pointer-events: none;
+        z-index: 1;
+        animation: floatHeart 5s ease-in-out infinite;
+        text-shadow: 0 0 10px rgba(255, 20, 147, 0.7);
+      }
+
+      @keyframes floatHeart {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        50% {
+          transform: translateY(-100px) rotate(20deg);
+          opacity: 0.7;
+        }
+      }
+
+      /* Confetti Effect */
+      .confetti {
+        position: fixed;
+        width: 15px;
+        height: 15px;
+        background: #ff69b4;
+        opacity: 0;
+        z-index: 999;
+        animation: confettiFall 5s linear forwards;
+      }
+
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-100px) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      
+      /* Falling Particles */
+      .falling-particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+        animation: falling linear forwards;
+      }
+      
+      @keyframes falling {
+        0% {
+          transform: translateY(-10px) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(calc(100vh + 10px)) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 600px) {
+        .photo-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .love-letter {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== HALAMAN AWAL ===== -->
+    <div class="entry-page" id="entryPage">
+      <h1 class="entry-title">Happy Birthday!</h1>
+      <button class="enter-btn" id="enterBtn">Open My Heart</button>
+    </div>
+
+    <!-- ===== HALAMAN UTAMA ===== -->
+    <div class="main-page" id="mainPage">
+      <!-- Audio Player (Auto Play) -->
+      <audio id="bgMusic" controls loop>
+        <source src="blue.mp3" type="audio/mpeg" />
+        <!-- Ganti dengan direct link MP3 -->
+      </audio>
+
+      <!-- Photo Showcase -->
+      <div class="photo-showcase">
+        <img src="sss.jpg" alt="Her Photo" class="main-photo" id="mainPhoto" />
+      </div>
+      <div class="photo-grid">
+        <img src="IMG_0683.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
+        <img src="IMG_0164.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
+        <img src="IMG_0732.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
+        <img src="IMG_9933.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
+        <img src="IMG_9950.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
+        <img src="sss.jpg" onclick="changeMainPhoto(this.src); createHeartParticles(event)" />
+        <!-- Tambahkan lebih banyak foto -->
+      </div>
+
+      <!-- Love Letter -->
+      <div class="love-letter">
+        <div class="letter-content" id="letterText"></div>
+      </div>
+    </div>
+
+    <script>
+      // ===== TRANSISI HALAMAN =====
+      document
+        .getElementById("enterBtn")
+        .addEventListener("click", function () {
+          // 1. Animasi tombol
+          this.innerHTML = "✨ Ready? ✨";
+          this.style.borderColor = "#fff";
+
+          // 2. Buat efek partikel jatuh
+          createFallingParticles(100); // Jumlah partikel yang banyak
+          
+          // 3. Buat efek confetti
+          createConfetti();
+
+          // 4. Sembunyikan halaman awal
+          setTimeout(() => {
+            document.getElementById("entryPage").classList.add("hide");
+            document.getElementById("mainPage").style.display = "block";
+
+            // 5. Mulai musik dan efek
+            document
+              .getElementById("bgMusic")
+              .play()
+              .catch((e) => {
+                console.log("Autoplay prevented - user interaction needed");
+              });
+            typeWriter();
+            createFloatingHearts();
+            
+            // Mulai efek partikel jatuh terus menerus di halaman kedua
+            startContinuousFallingParticles();
+          }, 3000);
+        });
+
+      // ===== PARTIKEL JATUH =====
+      function createFallingParticles(count) {
+        const colors = ["#ff69b4", "#ff1493", "#ffb6c1", "#ff85a2", "#ff6b81", "gold"];
+        
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => {
+            const particle = document.createElement("div");
+            particle.className = "falling-particle";
+            
+            // Posisi acak di bagian atas layar
+            particle.style.left = Math.random() * 100 + "vw";
+            particle.style.top = "-10px";
+            
+            // Warna acak
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Ukuran acak
+            const size = Math.random() * 10 + 5;
+            particle.style.width = size + "px";
+            particle.style.height = size + "px";
+            
+            // Kecepatan jatuh acak
+            const duration = Math.random() * 3 + 2;
+            particle.style.animationDuration = duration + "s";
+            
+            document.body.appendChild(particle);
+            
+            // Hapus partikel setelah animasi selesai
+            setTimeout(() => {
+              particle.remove();
+            }, duration * 1000);
+          }, i * 30); // Penundaan untuk efek bertahap
+        }
+      }
+      
+      // ===== PARTIKEL JATUH TERUS MENERUS =====
+      function startContinuousFallingParticles() {
+        // Buat partikel jatuh setiap 300ms
+        setInterval(() => {
+          createFallingParticles(5); // Buat 5 partikel setiap interval
+        }, 300);
+      }
+
+      // ===== PARTIKEL INTERAKTIF =====
+      function createParticles() {
+        document.body.addEventListener("mousemove", function (e) {
+          const particle = document.createElement("div");
+          particle.className = "particle";
+          particle.style.left = e.clientX + "px";
+          particle.style.top = e.clientY + "px";
+          particle.style.opacity = "0.8";
+          particle.style.transform = "scale(1)";
+
+          // Random color variation
+          const colors = ["gold", "#ff69b4", "#ff1493", "#ffb6c1"];
+          particle.style.background =
+            colors[Math.floor(Math.random() * colors.length)];
+
+          document.body.appendChild(particle);
+
+          // Animasi partikel
+          setTimeout(() => {
+            particle.style.transform = "scale(0)";
+            particle.style.opacity = "0";
+            setTimeout(() => particle.remove(), 500);
+          }, 50);
+        });
+      }
+
+      // ===== PARTIKEL HATI KETIKA FOTO DIKLIK =====
+      function createHeartParticles(event) {
+        const heartIcons = ["❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "💖"];
+        const colors = ["#ff69b4", "#ff1493", "#ffb6c1", "#ff85a2", "#ff6b81"];
+        
+        // Dapatkan posisi klik
+        const x = event.clientX;
+        const y = event.clientY;
+        
+        // Buat 15 partikel hati
+        for (let i = 0; i < 15; i++) {
+          const heart = document.createElement("div");
+          heart.className = "heart-particle";
+          heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+          
+          // Set posisi awal (tempat diklik)
+          heart.style.left = x + "px";
+          heart.style.top = y + "px";
+          
+          // Warna acak
+          heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+          
+          // Ukuran acak
+          const size = Math.random() * 20 + 15;
+          heart.style.fontSize = size + "px";
+          
+          // Arah dan jarak terbang acak
+          const angle = Math.random() * Math.PI * 2;
+          const distance = Math.random() * 100 + 50;
+          const tx = Math.cos(angle) * distance;
+          const ty = Math.sin(angle) * distance;
+          
+          // Set variabel CSS untuk animasi
+          heart.style.setProperty("--tx", tx + "px");
+          heart.style.setProperty("--ty", -ty + "px"); // Minus untuk terbang ke atas
+          
+          document.body.appendChild(heart);
+          
+          // Hapus elemen setelah animasi selesai
+          setTimeout(() => heart.remove(), 2000);
+        }
+      }
+
+      // ===== CONFECTTI EFFECT =====
+      function createConfetti() {
+        for (let i = 0; i < 100; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement("div");
+            confetti.className = "confetti";
+            confetti.style.left = Math.random() * 100 + "vw";
+            confetti.style.background = `hsl(${
+              Math.random() * 60 + 330
+            }, 100%, 70%)`;
+            confetti.style.animationDuration = Math.random() * 3 + 2 + "s";
+            confetti.style.animationDelay = Math.random() * 2 + "s";
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+              confetti.remove();
+            }, 5000);
+          }, i * 30);
+        }
+      }
+
+      // ===== ANIMASI KETIK SURAT =====
+      function typeWriter() {
+        const text = `De, selamat ulang tahun yaa! Semoga di umur yang baru ini, semua doa-doa baikmu diijabah, rezekimu lancar, kesehatanmu selalu dijaga Allah, dan semua hal yang lagi kamu perjuangin bisa dimudahkan jalannya.
+
+Aku tau tahun ini bukan tahun yang gampang buat kamu, banyak hal yang harus kamu hadapi, banyak keputusan besar yang harus kamu ambil, tapi aku yakin kamu bakal bisa ngelewatin semuanya dengan kuat, seperti yang selama ini kamu lakuin.
+
+Semoga di umur baru ini, kamu makin tenang, makin bahagia, dan semakin dekat sama impian-impian yang selama ini kamu perjuangin. Apapun yang terjadi nanti, jangan lupa buat tetap jadi Chacha yang selalu penuh semangat & nggak gampang nyerah.
+
+Pokoknya, semoga ini jadi tahun yang penuh keberkahan buat kamu. Enjoy your day, yaa! 🎂🎁`;
+        const element = document.getElementById("letterText");
+        let i = 0;
+        let isNewLine = false;
+
+        function typing() {
+          if (i < text.length) {
+            // Handle line breaks
+            if (text.charAt(i) === "\n") {
+              element.innerHTML += "<br>";
+              isNewLine = true;
+            } else {
+              if (isNewLine) {
+                element.innerHTML += text.charAt(i);
+                isNewLine = false;
+              } else {
+                element.innerHTML += text.charAt(i);
+              }
+            }
+            i++;
+            setTimeout(typing, Math.random() * 30 + 30);
+          } else {
+            // Add final heartbeat effect
+            element.innerHTML += ' <span class="heartbeat">❤️</span>';
+          }
+        }
+
+        typing();
+      }
+
+      // ===== GALERI FOTO =====
+      function changeMainPhoto(src) {
+        const mainPhoto = document.getElementById("mainPhoto");
+        mainPhoto.style.transform = "scale(0) rotate(180deg)";
+
+        setTimeout(() => {
+          mainPhoto.src = src;
+          mainPhoto.style.transform = "scale(1) rotate(0deg)";
+
+          // Add temporary glow effect
+          mainPhoto.style.boxShadow = "0 0 60px rgba(255, 105, 180, 1)";
+          setTimeout(() => {
+            mainPhoto.style.boxShadow = "0 0 30px rgba(255, 105, 180, 0.6)";
+          }, 1000);
+        }, 300);
+      }
+
+      // ===== HATI MENGAMBANG =====
+      function createFloatingHearts() {
+        const hearts = ["❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "💖"];
+
+        setInterval(() => {
+          const heart = document.createElement("div");
+          heart.className = "floating-heart";
+          heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+          heart.style.left = Math.random() * 100 + "vw";
+          heart.style.fontSize = Math.random() * 20 + 15 + "px";
+          heart.style.animationDuration = Math.random() * 6 + 3 + "s";
+          heart.style.animationDelay = Math.random() * 5 + "s";
+
+          // Random slight color variation
+          heart.style.color = `hsl(${Math.random() * 60 + 330}, 100%, 70%)`;
+
+          document.body.appendChild(heart);
+
+          setTimeout(() => heart.remove(), 8000);
+        }, 300);
+      }
+
+      // Prevent scrolling during loading
+      document.body.style.overflow = "hidden";
+      window.addEventListener("click", function enableScroll() {
+        document.body.style.overflow = "auto";
+        window.removeEventListener("click", enableScroll);
+      });
+    </script>
+  </body>
+</html>
